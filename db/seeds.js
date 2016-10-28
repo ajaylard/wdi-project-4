@@ -38,13 +38,6 @@ let users = [{
   password: "password",
   passwordConfirmation: "password",
 }, {
-  username: "Alicia",
-  firstName: "Alicia",
-  lastName: "Pearse",
-  email:  "alicia@alicia.com",
-  password: "password",
-  passwordConfirmation: "password",
-}, {
   username: "DanTheNonStickPan",
   firstName: "Dan",
   lastName: "Rogers",
@@ -135,6 +128,13 @@ let users = [{
   email:  "rane@rane.com",
   password: "password",
   passwordConfirmation: "password",
+}, {
+  username: "Alicia",
+  firstName: "Alicia",
+  lastName: "Pearse",
+  email:  "alicia@alicia.com",
+  password: "password",
+  passwordConfirmation: "password",
 }, ];
 
 let seed = [];
@@ -147,23 +147,23 @@ setTimeout(()=>{
 
 const suppers = [{
   host:        seed[1],
-  title:       "Italian Carbfest",
-  date:        "",
+  title:       "The Italian Job",
+  date:        "10/26/2016",
   image:       "/images/1.jpeg",
-  description: "diiiicks",
+  description: "No Italian food will be served...the only Italian thing on the menu is me. Also be prepared for the authentic Italian charm and inappropriate sexual advances.",
   menu:
     {
       starter: "Crab cakes",
-      main:    "Roast chicken with potatoes and carrots",
+      main:    "Lemon sole with chipotle & ancho chilli recado",
       dessert: "Chocolate fondant"
     },
   maxGuests:   10,
-  location:    "Crouch End",
+  location:    "London",
   status:      "active"
 },{
   host:        seed[2],
-  title:       "Natter with Nattie",
-  date:        "",
+  title:       "A Foodies Supper",
+  date:        "11/26/2016",
   image:       "/images/2.jpeg",
   description: "black and big",
   menu:
@@ -176,9 +176,9 @@ const suppers = [{
   location:    "Crouch End",
   status:      "active"
 },{
-  host:        seed[6],
+  host:        seed[3],
   title:       "random",
-  date:        "",
+  date:        "11/22/2016",
   image:       "/images/3.jpeg",
   description: "random",
   menu:
@@ -191,9 +191,9 @@ const suppers = [{
   location:    "Islington",
   status:      "active"
 },{
-  host:        seed[1],
-  title:       "Natter with Nattie 2: the revenge",
-  date:        "",
+  host:        seed[4],
+  title:       "Taste of the Sea",
+  date:        "11/09/2016",
   image:       "/images/4.jpeg",
   description: "random",
   menu:
@@ -206,9 +206,9 @@ const suppers = [{
   location:    "Brighton",
   status:      "active"
 },{
-  host:        seed[2],
+  host:        seed[1],
   title:       "Paul's Night of Pleasure",
-  date:        "",
+  date:        "11/12/2016",
   image:       "/images/5.jpeg",
   description: "random",
   menu:
@@ -223,12 +223,12 @@ const suppers = [{
 },{
   host:        seed[2],
   title:       "random",
-  date:        "",
-  image:       "/images/4.jpeg",
+  date:        "11/16/2016",
+  image:       "/images/6.jpeg",
   description: "random",
   menu:
     {
-      starter: "Duck ceviche",
+      starter: "",
       main:    "Lemon sole with chipotle & ancho chilli recado",
       dessert: "Blackberry fool"
     },
@@ -236,10 +236,10 @@ const suppers = [{
   location:    "Islington",
   status:      "active"
 },{
-  host:        seed[3],
+  host:        seed[5],
   title:       "random",
-  date:        "",
-  image:       "../images/5.jpeg",
+  date:        "11/14/2016",
+  image:       "../images/7.jpeg",
   description: "random",
   menu:
     {
@@ -251,10 +251,10 @@ const suppers = [{
   location:    "Shoreditch",
   status:      "active"
 },{
-  host:        seed[3],
+  host:        seed[7],
   title:       "random",
   date:        "",
-  image:       "/images/4.jpeg",
+  image:       "/images/8.jpeg",
   description: "random",
   menu:
     {
@@ -265,22 +265,7 @@ const suppers = [{
   maxGuests:   6,
   location:    "Islington",
   status:      "active"
-},{
-  host:        seed[4],
-  title:       "random",
-  date:        "",
-  image:       "../images/6.jpeg",
-  description: "random",
-  menu:
-    {
-      starter: "Spicy grilled vegetable rolls & chickpea salad",
-      main:    "Sri Lankan-style monkfish curry",
-      dessert: "Roasted banana & cinnamon ice cream"
-    },
-  maxGuests:   6,
-  location:    "Stepney Green",
-  status:      "active"
-}];
+},];
 
 suppers.forEach(supper => Supper.create(supper, (err, supper) => {
   if(err) return console.log(err);
