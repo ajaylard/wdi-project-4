@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html ng-app='supperClub'>
+<head>
+  <meta charset="utf-8">
+  <title>SUPPERCLUB</title>
+  <link href="https://fonts.googleapis.com/css?family=Francois+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,700,900" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/app.js" charset="utf-8"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" media="screen">
+  <base href="/" />
+</head>
+<body ng-controller="mainCtrl as main">
+  <header>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a ui-sref="home" class="navbar-brand" href="#">Supperclub<span id="logodot">.</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li ng-if="!main.user">
+              <a class="reglinkselected" ui-sref="register">Register</a>
+            </li>
+            <li ng-if="!main.user">
+              <a class="loginlinkselected" ui-sref="login">Login</a>
+            </li>
+            <li ng-if="main.user">
+              <a ui-sref="suppersNew">Create Supper</a>
+            </li>
+            <li ng-if="main.user">
+              <a ui-sref="suppersIndex">Find Suppers</a>
+            </li>
+            <li ng-if="main.user">
+              <a ui-sref="usersSuppers({ id: main.user.id })" role="button" aria-haspopup="true" aria-expanded="false">My Suppers</a>
+            </li>
+            <li ng-if="main.user">
+              <a <a ui-sref="reservationsIndex" role="button" aria-haspopup="true" aria-expanded="false">Reservations</a>
+            </li>
+            <li ng-if="main.user">
+              <a ui-sref="usersShow({ id: main.user.id })" role="button" aria-haspopup="true" aria-expanded="false">My Profile</a>
+            </li>
+            <li ng-if="main.user">
+              <a ng-click="main.logout()" href="#">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <!-- <div class="row">
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-9">
+      <main ui-view></main>
+    </div>
+  </div> -->
+
+  <main ui-view></main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+h2 {
+  font-family: $sub-font-stack;
+  text-transform: none;
+  font-size: 20px;
+  // font-style: italic;
+  a {
+    font-family: $header-font-stack;
+    text-transform: uppercase;
+    color: $secondary-color;
+      &:hover {
+        color: $primary-color;
+      }
+  }
+}
+
+h3 {
+  font-family: $header-font-stack;
+  font-weight: 500;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.menuheader {
+    font-family: $header-font-stack;
+    font-weight: 500;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+.showdetails {
+  font-family: $header-font-stack;
+  text-transform: uppercase;
+}
+
+p{
+  font-family: $sub-font-stack;
+  font-weight: 100;
+  font-size: 16px;
+  // font-style: italic;
+}
+
+.showbutton {
+    font-family: $header-font-stack;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 30px;
+    color: $secondary-color;
+  &:hover {
+    color: $primary-color;
+  }
+}
+h1{
+  margin-top: 50px;
+}
+.showtitle{
+  margin-top: 30px;
+  font-size: 40px;
+}

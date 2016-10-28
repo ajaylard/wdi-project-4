@@ -1,0 +1,39 @@
+  <div class="row">
+    <div class="col-md-6">
+      <div class="suppernewpic"></div>
+    </div>
+    <div class="col-md-6 form">
+      <h2>Create your Supper</h2>
+      <form ng-submit="new.submit()">
+        <div class="form-group">
+          <input class="form-control" type="text" name="title" ng-model="new.supper.title" placeholder="Title">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="image" ng-model="new.supper.image" placeholder="Upload an image">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="description" ng-model="new.supper.description" placeholder="Description">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="number" name="maxGuests" ng-model="new.supper.maxGuests" placeholder="Maximum Guests">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="location" ng-model="new.supper.location" placeholder="Location">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="location" ng-model="new.supper.date" placeholder="Date">
+        </div>
+        <h2 id="newform-menu">What's on the Menu?</h2>
+        <div class="form-group">
+          <input class="form-control" type="text" name="menu.starter" ng-model="new.supper.menu.starter" placeholder="Starter">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="menu.main" ng-model="new.supper.menu.main" placeholder="Main">
+        </div>
+        <div class="form-group">
+          <input class="form-control" type="text" name="menu.dessert" ng-model="new.supper.menu.dessert" placeholder="Dessert">
+        </div>
+        <input id="suppersnewbutton" class="button" type="submit" value="Submit">
+      </form>
+    </div>
+  <!-- </div> -->

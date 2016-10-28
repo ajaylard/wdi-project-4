@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="resindexpic"></div>
+  </div>
+  <div class="col-md-6">
+    <h1>Incoming Supper requests</h1>
+    <hr />
+    <ul>
+      <li ng-repeat="reservation in index.reservations">
+        <ul>
+          <li>
+            <h2>Supper: {{ reservation.supper.title }}</h2>
+            <h3>Diner: {{ reservation.diner.username }}</h3>
+            <button ng-click="index.accept(reservation._id)" class="resbutton">Accept</button>
+            <button ng-click="index.reject(reservation._id)" ng-click="" class="resbutton">Reject</button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>

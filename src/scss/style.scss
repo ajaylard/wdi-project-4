@@ -1,0 +1,53 @@
+@import 'skeleton/normalize';
+// @import 'skeleton/skeleton';
+@import 'partials/bower';
+@import 'variables/fonts';
+@import 'variables/colors';
+@import 'partials/index';
+@import 'partials/navbar';
+@import 'partials/supperShow';
+@import 'partials/supperNew';
+@import 'partials/navbar';
+@import "partials/homepage";
+@import 'partials/index';
+@import 'partials/supperShow';
+@import 'partials/supperNew';
+@import 'partials/login';
+@import 'partials/register';
+@import 'partials/usersSuppers';
+@import 'partials/userShow';
+@import 'partials/reservationsIndex';
+
+h1{
+  font-family: $header-font-stack;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.button {
+  border: solid 7px $secondary-color;
+  padding: 20px 40px 20px 40px;
+  background: none;
+  font-family: $header-font-stack;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+
+  &:hover {
+    color: $primary-color;
+    border: solid 7px $primary-color;
+  }
+}
+
+hr{
+  border-bottom: solid 7px $secondary-color;
+}
+
+.form-control:hover{
+  outline: none;
+}
+
+#logodot{
+  color:$secondary-color;
+  font-size: 20px;
+}

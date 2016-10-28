@@ -1,0 +1,14 @@
+.usershowpic{
+  background: url(https://images.unsplash.com/photo-1449792893722-936641bb3309?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&s=fc6e714737706d9444640ddde57b84b8) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+}
+
+h3 {
+  font-family: $sub-font-stack;
+  text-transform: none;
+}

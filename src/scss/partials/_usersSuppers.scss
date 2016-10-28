@@ -1,0 +1,27 @@
+h2 a{
+  font-family: $header-font-stack;
+  text-transform: uppercase;
+  color: $primary-color;
+    &:hover {
+    color: $secondary-color;
+    }
+}
+
+#newform-menu{
+  margin-top: 20px;
+}
+
+.form {
+  font-size: 20px;
+  font-family: $sub-font-stack;
+}
+
+.mysuppers-pic{
+  background: url(https://images.unsplash.com/photo-1449791898646-5a6fdfa4b4dd?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&s=784c2f3a022a4fe7e0d8a8c1758c6588) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+}

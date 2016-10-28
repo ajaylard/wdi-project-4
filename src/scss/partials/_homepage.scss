@@ -1,0 +1,32 @@
+.homepage {
+  margin: 0 auto;
+  width: 100%;
+  height: 100vh;
+
+  background: url(https://images.unsplash.com/photo-1432835305417-6919779246b4?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&s=dd84f63080a997782eda81366d07b015) no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.centered {
+    z-index: 5;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+
+    .content {
+
+      h1 {
+        font-size: 120px;
+        letter-spacing: 3px;
+        color: $secondary-color;
+        font-weight: 100;
+        text-transform: uppercase;
+        font-family: $header-font-stack;
+      }
+    }
+}

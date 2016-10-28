@@ -1,0 +1,13 @@
+<div class="container">
+  <h1>Find a Supper</h1>
+  <ul>
+    <li class="suppers" ng-repeat="supper in index.suppers">
+      <ul>
+        <li>
+          <img class="supperindexpic" ng-src="{{ supper.image }}">
+          <h4><a ui-sref="suppersShow({ id: supper._id })" class="indexlinks">{{ supper.title }}</a></h4>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

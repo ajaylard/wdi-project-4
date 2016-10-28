@@ -1,0 +1,21 @@
+a {
+  font-family: $header-font-stack;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+navbar-brand{
+  a {
+    color:$secondary-color;
+  }
+
+}
+
+.navbar-default {
+      background-color: none;
+      border-bottom: solid 7px $secondary-color;
+}
+
+.navbar{
+  margin-bottom: 0;
+}
