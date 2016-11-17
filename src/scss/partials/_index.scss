@@ -37,8 +37,8 @@ h1{
 }
 
 .indexlinks {
-  font-family: $sub-font-stack;
-  text-transform: none;
+  font-family: $header-font-stack;
+  text-transform: uppercase;
   font-weight: 400;
   color: $primary-color;
     &:hover {

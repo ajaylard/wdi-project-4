@@ -150,7 +150,7 @@ const suppers = [{
   title:       "The Italian Job",
   date:        "10/26/2016",
   image:       "/images/1.jpeg",
-  description: "No Italian food will be served...the only Italian thing on the menu is me. Also be prepared for the authentic Italian charm and inappropriate sexual advances.",
+  description: "No Italian food will be served...the only authentic Italian thing about this supper is my charm and the inappropriate sexual advances.",
   menu:
     {
       starter: "Crab cakes",
