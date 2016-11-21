@@ -12,7 +12,7 @@
         <!-- info -->
         <h1 id="show-menuheader" >Details</h1>
         <!-- <hr /> -->
-        <h3 class ="showdetails">Date: {{ show.supper.date }}</h3>
+        <h3 class ="showdetails">Date: {{ show.supper.date | date }}</h3>
         <h3 class ="showdetails">Places taken: {{ show.supper.guests.length }}</h3>
         <ul>
           <li ng-repeat="guest in show.supper.guests">{{ guest.username }}</li>

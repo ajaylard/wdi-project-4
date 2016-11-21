@@ -31768,7 +31768,7 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 /**
  * State-based routing for AngularJS
- * @version v0.3.1
+ * @version v0.3.2
  * @link http://angular-ui.github.com/
  * @license MIT License, http://www.opensource.org/licenses/MIT
  */
@@ -31988,6 +31988,11 @@ function map(collection, callback) {
     result[i] = callback(val, i);
   });
   return result;
+}
+
+// issue #2676 #2889
+function silenceUncaughtInPromise (promise) {
+  return promise.then(undefined, function() {}) && promise;
 }
 
 /**
@@ -33034,8 +33039,8 @@ function $UrlMatcherFactory() {
   // If the slashes are simply URLEncoded, the browser can choose to pre-decode them,
   // and bidirectional encoding/decoding fails.
   // Tilde was chosen because it's not a RFC 3986 section 2.2 Reserved Character
-  function valToString(val) { return val != null ? val.toString().replace(/~/g, "~~").replace(/\//g, "~2F") : val; }
-  function valFromString(val) { return val != null ? val.toString().replace(/~2F/g, "/").replace(/~~/g, "~") : val; }
+  function valToString(val) { return val != null ? val.toString().replace(/(~|\/)/g, function (m) { return {'~':'~~', '/':'~2F'}[m]; }) : val; }
+  function valFromString(val) { return val != null ? val.toString().replace(/(~~|~2F)/g, function (m) { return {'~~':'~', '~2F':'/'}[m]; }) : val; }
 
   var $types = {}, enqueue = true, typeQueue = [], injector, defaultTypes = {
     "string": {
@@ -34669,10 +34674,12 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
   $get.$inject = ['$rootScope', '$q', '$view', '$injector', '$resolve', '$stateParams', '$urlRouter', '$location', '$urlMatcherFactory'];
   function $get(   $rootScope,   $q,   $view,   $injector,   $resolve,   $stateParams,   $urlRouter,   $location,   $urlMatcherFactory) {
 
-    var TransitionSuperseded = $q.reject(new Error('transition superseded'));
-    var TransitionPrevented = $q.reject(new Error('transition prevented'));
-    var TransitionAborted = $q.reject(new Error('transition aborted'));
-    var TransitionFailed = $q.reject(new Error('transition failed'));
+    var TransitionSupersededError = new Error('transition superseded');
+
+    var TransitionSuperseded = silenceUncaughtInPromise($q.reject(TransitionSupersededError));
+    var TransitionPrevented = silenceUncaughtInPromise($q.reject(new Error('transition prevented')));
+    var TransitionAborted = silenceUncaughtInPromise($q.reject(new Error('transition aborted')));
+    var TransitionFailed = silenceUncaughtInPromise($q.reject(new Error('transition failed')));
 
     // Handles the case where a state which is the target of a transition is not found, and the user
     // can optionally retry or defer the transition
@@ -34728,7 +34735,10 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
       var retryTransition = $state.transition = $q.when(evt.retry);
 
       retryTransition.then(function() {
-        if (retryTransition !== $state.transition) return TransitionSuperseded;
+        if (retryTransition !== $state.transition) {
+          $rootScope.$broadcast('$stateChangeCancel', redirect.to, redirect.toParams, state, params);
+          return TransitionSuperseded;
+        }
         redirect.options.$retry = true;
         return $state.transitionTo(redirect.to, redirect.toParams, redirect.options);
       }, function() {
@@ -35067,7 +35077,10 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
       var transition = $state.transition = resolved.then(function () {
         var l, entering, exiting;
 
-        if ($state.transition !== transition) return TransitionSuperseded;
+        if ($state.transition !== transition) {
+          $rootScope.$broadcast('$stateChangeCancel', to.self, toParams, from.self, fromParams);
+          return TransitionSuperseded;
+        }
 
         // Exit 'from' states not kept
         for (l = fromPath.length - 1; l >= keep; l--) {
@@ -35088,7 +35101,10 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
         }
 
         // Run it again, to catch any transitions in callbacks
-        if ($state.transition !== transition) return TransitionSuperseded;
+        if ($state.transition !== transition) {
+          $rootScope.$broadcast('$stateChangeCancel', to.self, toParams, from.self, fromParams);
+          return TransitionSuperseded;
+        }
 
         // Update globals in $state
         $state.$current = to;
@@ -35124,7 +35140,14 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
 
         return $state.current;
       }).then(null, function (error) {
-        if ($state.transition !== transition) return TransitionSuperseded;
+        // propagate TransitionSuperseded error without emitting $stateChangeCancel
+        // as it was already emitted in the success handler above
+        if (error === TransitionSupersededError) return TransitionSuperseded;
+
+        if ($state.transition !== transition) {
+          $rootScope.$broadcast('$stateChangeCancel', to.self, toParams, from.self, fromParams);
+          return TransitionSuperseded;
+        }
 
         $state.transition = null;
         /**
@@ -35148,7 +35171,7 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
         evt = $rootScope.$broadcast('$stateChangeError', to.self, toParams, from.self, fromParams, error);
 
         if (!evt.defaultPrevented) {
-            $urlRouter.update();
+          $urlRouter.update();
         }
 
         return $q.reject(error);
@@ -35263,7 +35286,17 @@ function $StateProvider(   $urlRouterProvider,   $urlMatcherFactory) {
       var state = findState(stateOrName, options.relative);
       if (!isDefined(state)) { return undefined; }
       if (!isDefined($state.$current.includes[state.name])) { return false; }
-      return params ? equalForKeys(state.params.$$values(params), $stateParams, objectKeys(params)) : true;
+      if (!params) { return true; }
+
+      var keys = objectKeys(params);
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i], paramDef = state.params[key];
+        if (paramDef && !paramDef.type.equals($stateParams[key], params[key])) {
+          return false;
+        }
+      }
+
+      return true;
     };
 
 
@@ -36036,9 +36069,9 @@ function $StateRefDirective($state, $timeout) {
 
       if (!type.clickable) return;
       hookFn = clickHook(element, $state, $timeout, type, function() { return def; });
-      element.bind("click", hookFn);
+      element[element.on ? 'on' : 'bind']("click", hookFn);
       scope.$on('$destroy', function() {
-        element.unbind("click", hookFn);
+        element[element.off ? 'off' : 'unbind']("click", hookFn);
       });
     }
   };
@@ -36088,9 +36121,9 @@ function $StateRefDynamicDirective($state, $timeout) {
 
       if (!type.clickable) return;
       hookFn = clickHook(element, $state, $timeout, type, function() { return def; });
-      element.bind("click", hookFn);
+      element[element.on ? 'on' : 'bind']("click", hookFn);
       scope.$on('$destroy', function() {
-        element.unbind("click", hookFn);
+        element[element.off ? 'off' : 'unbind']("click", hookFn);
       });
     }
   };
@@ -51595,13 +51628,13 @@ angular.module('contenteditable', [])
 }));
 /*
  * angular-socialshare
- * 2.3.1
+ * 2.3.3
  * 
  * A social media url and content share module for angularjs.
  * http://720kb.github.io/angular-socialshare
  * 
  * MIT license
- * Thu Sep 29 2016
+ * Wed Oct 26 2016
  */
 /*global angular*/
 /*eslint no-loop-func:0, func-names:0*/
@@ -51629,6 +51662,10 @@ angular.module('contenteditable', [])
         'provider': 'facebook',
         'conf': {
           'url':'',
+          'title':'',
+          'href':'',
+          'quote':'',
+          'hashtags':'',
           'text': '',
           'media': '',
           'type': '',
@@ -51970,6 +52007,14 @@ angular.module('contenteditable', [])
           urlString += '&to=' + encodeURIComponent(attrs.socialshareTo);
         }
 
+        if (attrs.socialshareQuote) {
+          urlString += '&quote=' + encodeURIComponent(attrs.socialshareQuote);
+        }
+
+        if (attrs.socialshareHashtags) {
+          urlString += '&hashtag=' + encodeURIComponent(attrs.socialshareHashtags);
+        }
+
         if (attrs.socialshareDisplay) {
           urlString += '&display=' + encodeURIComponent(attrs.socialshareDisplay);
         }
@@ -52006,6 +52051,50 @@ angular.module('contenteditable', [])
           urlString,
           'Facebook', 'toolbar=0,status=0,resizable=yes,width=' + attrs.socialsharePopupWidth + ',height=' + attrs.socialsharePopupHeight
           + ',top=' + ($window.innerHeight - attrs.socialsharePopupHeight) / 2 + ',left=' + ($window.innerWidth - attrs.socialsharePopupWidth) / 2);
+
+      } else if (attrs.socialshareType && attrs.socialshareType === 'share') {
+       // if user specifies that they want to use the Facebook feed dialog (https://developers.facebook.com/docs/sharing/reference/feed-dialog/v2.4)
+       urlString = 'https://www.facebook.com/dialog/share?';
+
+       if (attrs.socialshareVia) {
+         urlString += '&app_id=' + encodeURIComponent(attrs.socialshareVia);
+       }
+       if (attrs.socialshareTitle) {
+         urlString += '&title=' + encodeURIComponent(attrs.socialshareTitle);
+       }
+
+       if (attrs.socialshareUrl) {
+         urlString += '&href=' + encodeURIComponent(attrs.socialshareUrl);
+       }
+
+       if (attrs.socialshareQuote) {
+         urlString += '&quote=' + encodeURIComponent(attrs.socialshareQuote);
+       }
+
+       if (attrs.socialshareDisplay) {
+         urlString += '&display=' + encodeURIComponent(attrs.socialshareDisplay);
+       }
+
+      if (attrs.socialshareDescription) {
+         urlString += '&description=' + encodeURIComponent(attrs.socialshareDescription);
+       }
+
+       if (attrs.socialshareHashtags) {
+         urlString += '&hashtag=' + encodeURIComponent(attrs.socialshareHashtags);
+       }
+
+       if (attrs.socialshareCaption) {
+         urlString += '&caption=' + encodeURIComponent(attrs.socialshareCaption);
+       }
+
+       if (attrs.socialshareMedia) {
+         urlString += '&picture=' + encodeURIComponent(attrs.socialshareMedia);
+       }
+
+       $window.open(
+         urlString,
+         'Facebook', 'toolbar=0,status=0,resizable=yes,width=' + attrs.socialsharePopupWidth + ',height=' + attrs.socialsharePopupHeight
+         + ',top=' + ($window.innerHeight - attrs.socialsharePopupHeight) / 2 + ',left=' + ($window.innerWidth - attrs.socialsharePopupWidth) / 2);
 
       } else if (attrs.socialshareType && attrs.socialshareType === 'send') {
         // if user specifies that they want to use the Facebook send dialog (https://developers.facebook.com/docs/sharing/reference/send-dialog)
@@ -52075,8 +52164,12 @@ angular.module('contenteditable', [])
 
         urlString += '&bcc=' + encodeURIComponent(attrs.socialshareBcc);
       }
-
-      $window.open(urlString, '_blank');
+      if($window.self !== $window.top) {
+        $window.open(urlString, '_blank');
+      } else {
+        $window.open(urlString, '_self');
+      }
+      
     }
     , facebookMessengerShare = function facebookMessengerShare($window, attrs, element) {
 
@@ -52567,7 +52660,9 @@ angular.module('contenteditable', [])
         }
 
         //if some attribute is not define provide a default one
-        attrs.socialshareUrl = attrs.socialshareUrl || configurationElement.conf.url;
+        attrs.socialshareQuote = attrs.socialshareQuote || configurationElement.conf.quote;
+        attrs.socialshareTitle = attrs.socialshareTitle || configurationElement.conf.title;
+        attrs.socialshareUrl = attrs.socialshareUrl || configurationElement.conf.url || configurationElement.conf.href;
         attrs.socialshareText = attrs.socialshareText || configurationElement.conf.text;
         attrs.socialshareMedia = attrs.socialshareMedia || configurationElement.conf.media;
         attrs.socialshareType =  attrs.socialshareType || configurationElement.conf.type;
